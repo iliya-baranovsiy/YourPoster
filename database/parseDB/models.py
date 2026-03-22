@@ -2,87 +2,64 @@ from sqlalchemy import Date, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 import datetime
 from database.parseDB.engines import Base
+from datetime import date, timedelta
 
 
-class NewsOrm(Base):
+class BaseORM(Base):
+    __abstract__ = True
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(255))
+    content: Mapped[str]
+    pictureUrl: Mapped[str | None]
+    addingDate: Mapped[datetime.date] = mapped_column(Date)
+    dropDate: Mapped[datetime.date] = mapped_column(Date)
+
+    def __init__(self, title, content, pictureUrl):
+        self.title = title
+        self.content = content
+        self.pictureUrl = pictureUrl
+        self.addingDate = date.today()
+        self.dropDate = self.addingDate + timedelta(days=2)
+
+
+class NewsOrm(BaseORM):
     __tablename__ = "WorldNews"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_news', 'title', 'dropDate'),
+        Index('title_drop_index_news', 'title', 'dropDate'),
     )
 
 
-class SportOrm(Base):
+class SportOrm(BaseORM):
     __tablename__ = "Sports"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_sports', 'title', 'dropDate'),
+        Index('title_drop_index_sports', 'title', 'dropDate'),
     )
 
 
-class CryptoCurrencyOrm(Base):
+class CryptoCurrencyOrm(BaseORM):
     __tablename__ = "CryptoCurrency"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_crypto', 'title', 'dropDate'),
+        Index('title_drop_index_crypto', 'title', 'dropDate'),
     )
 
 
-class ItTechnologiesOrm(Base):
+class ItTechnologiesOrm(BaseORM):
     __tablename__ = "ItTechnologies"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_IT', 'title', 'dropDate'),
+        Index('title_drop_index_IT', 'title', 'dropDate'),
     )
 
 
-class AiNewsOrm(Base):
+class AiNewsOrm(BaseORM):
     __tablename__ = "AiNews"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_AI', 'title', 'dropDate'),
+        Index('title_drop_index_AI', 'title', 'dropDate'),
     )
 
 
-class ScienceOrm(Base):
+class ScienceOrm(BaseORM):
     __tablename__ = "Science"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    content: Mapped[str]
-    pictureUrl: Mapped[str | None]
-    addingDate: Mapped[datetime.date] = mapped_column(Date)
-    dropDate: Mapped[datetime.date] = mapped_column(Date)
-
     __table_args__ = (
-        Index('title|drop_index_science', 'title', 'dropDate'),
+        Index('title_drop_index_science', 'title', 'dropDate'),
     )
