@@ -8,8 +8,8 @@ from alembic import context
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from config.configurations import settings
+from database.engines import Base
 from database.parseDB.models import NewsOrm
-from database.parseDB.engines import Base
 
 config = context.config
 config.set_main_option('sqlalchemy.url', settings.async_db_url + '?async_fallback=True')

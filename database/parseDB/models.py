@@ -1,7 +1,7 @@
 from sqlalchemy import Date, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 import datetime
-from database.parseDB.engines import Base
+from database.engines import Base
 from datetime import date, timedelta
 
 
@@ -9,7 +9,7 @@ class BaseORM(Base):
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
+    title: Mapped[str] = mapped_column(String(255), unique=True)
     content: Mapped[str]
     pictureUrl: Mapped[str | None]
     addingDate: Mapped[datetime.date] = mapped_column(Date)
