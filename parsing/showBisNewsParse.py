@@ -33,6 +33,7 @@ class ShowBisNewsParsing(BaseParse):
                 for i in content_div.find_all('div', class_=['sc-1qq61ae-9 hmuIuG']):
                     i.decompose()
                 paragraphs = content_div.find_all('p')
+                # input ai_generate func
                 content = ''.join([i.text for i in paragraphs])
                 pic_url = soup.find('img', class_=['sc-foxktb-1 cYprnQ']).attrs['src']
                 return [title, content, pic_url]

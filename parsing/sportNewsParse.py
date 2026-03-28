@@ -30,6 +30,7 @@ class SportNewsParsing(BaseParse):
         else:
             article_content = soup.find('div', class_=['article-content'])
             content_paragraphs = article_content.find_all('p')
+            # input ai_generate func
             content = ''.join(
                 [i.text for i in content_paragraphs if not i.find_parent('div', class_=['content-photo'])])
             picture_url = ''
