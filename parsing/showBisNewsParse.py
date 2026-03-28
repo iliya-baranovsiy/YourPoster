@@ -35,7 +35,10 @@ class ShowBisNewsParsing(BaseParse):
                 paragraphs = content_div.find_all('p')
                 # input ai_generate func
                 content = ''.join([i.text for i in paragraphs])
-                pic_url = soup.find('img', class_=['sc-foxktb-1 cYprnQ']).attrs['src']
+                try:
+                    pic_url = soup.find('img', class_=['sc-foxktb-1 cYprnQ']).attrs['src']
+                except:
+                    pic_url = None
                 return [title, content, pic_url]
         else:
             return 0

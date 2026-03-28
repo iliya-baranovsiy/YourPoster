@@ -33,12 +33,11 @@ class SportNewsParsing(BaseParse):
             # input ai_generate func
             content = ''.join(
                 [i.text for i in content_paragraphs if not i.find_parent('div', class_=['content-photo'])])
-            picture_url = ''
             try:
                 article_photo_div = soup.find('div', class_=['article-head__photo'])
                 picture_url = article_photo_div.find('img').attrs['src']
             except:
-                pass
+                picture_url = None
             return [title, content, picture_url]
 
 

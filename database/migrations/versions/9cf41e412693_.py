@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6b6d0cbde0bb
+Revision ID: 9cf41e412693
 Revises:
-Create Date: 2026-03-28 18:00:29.751113
+Create Date: 2026-03-29 01:02:10.932849
 
 """
 
@@ -12,7 +12,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision: str = "6b6d0cbde0bb"
+revision: str = "9cf41e412693"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -49,6 +49,23 @@ def upgrade() -> None:
     op.create_index(
         "title_drop_index_crypto",
         "CryptoCurrencyNews",
+        ["title", "dropDate"],
+        unique=False,
+    )
+    op.create_table(
+        "GamesNews",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("title", sa.String(length=255), nullable=False),
+        sa.Column("content", sa.String(), nullable=False),
+        sa.Column("pictureUrl", sa.String(), nullable=True),
+        sa.Column("addingDate", sa.Date(), nullable=False),
+        sa.Column("dropDate", sa.Date(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("title"),
+    )
+    op.create_index(
+        "title_drop_index_games",
+        "GamesNews",
         ["title", "dropDate"],
         unique=False,
     )
@@ -153,6 +170,8 @@ def downgrade() -> None:
     op.drop_table("ScienceNews")
     op.drop_index("title_drop_index_IT", table_name="ItTechnologiesNews")
     op.drop_table("ItTechnologiesNews")
+    op.drop_index("title_drop_index_games", table_name="GamesNews")
+    op.drop_table("GamesNews")
     op.drop_index("title_drop_index_crypto", table_name="CryptoCurrencyNews")
     op.drop_table("CryptoCurrencyNews")
     op.drop_index("title_drop_index_AI", table_name="AiNews")

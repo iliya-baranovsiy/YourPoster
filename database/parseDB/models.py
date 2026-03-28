@@ -70,3 +70,10 @@ class ShowBisOrm(BaseORM):
     __table_args__ = (
         Index('title_drop_index_showbis', 'title', 'dropDate'),
     )
+
+
+class GamesOrm(BaseORM):
+    __tablename__ = "GamesNews"
+    __table_args__ = (
+        Index('title_drop_index_games', 'title', 'dropDate'),
+    )
