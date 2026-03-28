@@ -18,7 +18,10 @@ class WorldNewsParsing(BaseParse):
 
     def _get_detail_info(self, url):
         soup = self._get_soup(url)
-        title = soup.find('div', class_=['article__title']).text
+        try:
+            title = soup.find('div', class_=['article__title']).text
+        except:
+            return 0
         content = ''
         if title in self._exists_titles:
             return 0
@@ -37,4 +40,3 @@ class WorldNewsParsing(BaseParse):
 
 
 world_news = WorldNewsParsing()
-world_news.parse()
