@@ -31,21 +31,21 @@ class NewsOrm(BaseORM):
 
 
 class SportOrm(BaseORM):
-    __tablename__ = "Sports"
+    __tablename__ = "SportsNews"
     __table_args__ = (
         Index('title_drop_index_sports', 'title', 'dropDate'),
     )
 
 
 class CryptoCurrencyOrm(BaseORM):
-    __tablename__ = "CryptoCurrency"
+    __tablename__ = "CryptoCurrencyNews"
     __table_args__ = (
         Index('title_drop_index_crypto', 'title', 'dropDate'),
     )
 
 
 class ItTechnologiesOrm(BaseORM):
-    __tablename__ = "ItTechnologies"
+    __tablename__ = "ItTechnologiesNews"
     __table_args__ = (
         Index('title_drop_index_IT', 'title', 'dropDate'),
     )
@@ -59,7 +59,14 @@ class AiNewsOrm(BaseORM):
 
 
 class ScienceOrm(BaseORM):
-    __tablename__ = "Science"
+    __tablename__ = "ScienceNews"
     __table_args__ = (
         Index('title_drop_index_science', 'title', 'dropDate'),
+    )
+
+
+class ShowBisOrm(BaseORM):
+    __tablename__ = "ShowBisNews"
+    __table_args__ = (
+        Index('title_drop_index_showbis', 'title', 'dropDate'),
     )
