@@ -10,12 +10,13 @@ class BaseParse:
         self.model = model
         self._exists_titles = get_titles(self.model)
 
-    def _get_html(self, url, headers=None):
+    def _get_html(self, url, headers=None, encoding=None):
         response = requests.get(url=url, headers=headers)
+        response.encoding = encoding if encoding else response.encoding
         return response.text
 
-    def _get_soup(self, url, headers=None):
-        soup = BeautifulSoup(self._get_html(url, headers=headers), 'html.parser')
+    def _get_soup(self, url, headers=None, encoding=None):
+        soup = BeautifulSoup(self._get_html(url, headers=headers, encoding=encoding), 'html.parser')
         return soup
 
     def parse(self):
