@@ -3,10 +3,10 @@ from parsing.baseSettings import BaseParse
 
 
 class ItNewsParsing(BaseParse):
-    def __init__(self):
-        self.url = "https://habr.com/ru/news/"
+    def __init__(self, model=ItTechnologiesOrm, url='https://habr.com/ru/news/'):
+        self.url = url
         self.domain = 'https://habr.com'
-        super().__init__(ItTechnologiesOrm)
+        super().__init__(model)
 
     def _get_urls(self):
         urls = []
