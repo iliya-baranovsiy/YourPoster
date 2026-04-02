@@ -10,6 +10,8 @@ class Settings:
     PORT = os.getenv('DB_PORT')
     PASS = os.getenv('DB_PASS')
     NAME = os.getenv('DB_NAME')
+    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    APP_URL = os.getenv('APP_URL')
 
     @property
     def sync_db_url(self):
