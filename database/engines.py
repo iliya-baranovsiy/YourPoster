@@ -12,7 +12,7 @@ sync_engine = create_engine(
 
 async_engine = create_async_engine(
     url=settings.async_db_url,
-    echo=False,
+    echo=True,
     pool_size=100,
     max_overflow=50
 )
