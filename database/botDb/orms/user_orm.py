@@ -3,10 +3,12 @@ from sqlalchemy import select
 import asyncio
 from database.engines import async_session
 from database.botDb.models import UserModel, PaymentModel, ChannelsModel
+from database.botDb.schemas import PaymentDTO
 
 
 class UserOrmWork:
-    async def create_user(self, tg_id: int, username: str | None):
+    @staticmethod
+    async def create_user(tg_id: int, username: str | None):
         async with async_session() as session:
             if tg_id:
                 user = insert(UserModel).values(tg_id=tg_id, username=username)
@@ -16,15 +18,33 @@ class UserOrmWork:
                     await session.execute(unique_user)
                     await session.execute(payment)
 
-    async def get_users_channels(self, tg_id: int):
+    @staticmethod
+    async def get_users_channels(tg_id: int):
         async with async_session() as session:
             if tg_id:
                 stmt = select(ChannelsModel.channel_id).join(UserModel.channels).where(UserModel.tg_id == tg_id)
                 result = await session.execute(stmt)
                 return result.scalars().all()
 
-    async def set_user_payment_plan(self):
-        pass
+    @staticmethod
+    async def get_user_payment_plan_info(tg_id):
+        async with async_session() as session:
+            if tg_id:
+                query = select(PaymentModel.payment_plan,
+                               PaymentModel.balance,
+                               PaymentModel.activate_date,
+                               PaymentModel.end_date).where(
+                    PaymentModel.user_id == tg_id
+                )
+                executing = await session.execute(query)
+                result = executing.all()
+                result_dto = [PaymentDTO(
+                    balance=row[1],
+                    payment_plan=row[0],
+                    activate_date=row[2],
+                    end_date=row[3]
+                ) for row in result]
+                return result_dto[0]
 
 
 user_db = UserOrmWork()
