@@ -12,6 +12,9 @@ class Settings:
     NAME = os.getenv('DB_NAME')
     BOT_TOKEN = os.getenv('BOT_TOKEN')
     APP_URL = os.getenv('APP_URL')
+    REDIS_HOST = os.getenv('REDIS_HOST')
+    REDIS_PORT = os.getenv('REDIS_PORT')
+    REDIS_DB = os.getenv('REDIS_DB')
 
     @property
     def sync_db_url(self):
