@@ -1,32 +1,20 @@
-import asyncio
+from ..redis_init import redis_engine
 import json
-
-from .redis_init import redis_engine
-
-
-class RedisQueries:
-    @staticmethod
-    async def set_user(tg_id):
-        async with redis_engine as redis:
-            await redis.sadd('tg_users', tg_id)
-
-    @staticmethod
-    async def check_user_existing(tg_id):
-        async with redis_engine as redis:
-            result = await redis.sismember('tg_users', tg_id)
-            return result
-
-    @staticmethod
-    async def clear_users_set():
-        async with redis_engine as redis:
-            await redis.delete('tg_users')
 
 
 class RedisCashing:
-    @staticmethod
-    async def set_callback_count(tg_id, count=0):
+    async def inc_check_callback_count(self, tg_id) -> bool:
         async with redis_engine as redis:
-            await redis.hset('callback_cash_count', tg_id, count)
+            current_count = await self.get_callback_count(tg_id)
+            if not current_count:
+                await redis.hset('callback_cash_count', tg_id, 1)
+                return False
+            elif current_count >= 7:
+                await self.delete_user_callback_count(tg_id)
+                return True
+            else:
+                await redis.hset('callback_cash_count', tg_id, current_count + 1)
+                return False
 
     @staticmethod
     async def get_callback_count(tg_id):
@@ -52,18 +40,26 @@ class RedisCashing:
     async def get_cash(tg_id):
         async with redis_engine as redis:
             cash = await redis.hget("callback_cash", tg_id)
-            return json.loads(cash)
+            return json.loads(cash) if cash else None
 
     @staticmethod
     async def drop_counter():
+        # temporary
         async with redis_engine as redis:
             await redis.delete("callback_cash_count")
 
     @staticmethod
     async def drop_cash():
+        # temporary
         async with redis_engine as redis:
             await redis.delete("callback_cash")
 
+    @staticmethod
+    async def get_all():
+        # delete
+        async with redis_engine as redis:
+            result = await redis.hgetall("callback_cash")
+            return result
 
-redis_q = RedisQueries()
+
 redis_cash = RedisCashing()

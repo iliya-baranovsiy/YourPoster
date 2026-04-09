@@ -4,7 +4,7 @@ from aiogram.types import Message
 from botLogic.common_keyboards.menu_kb_builder import get_main_menu
 from database.botDb.orms.user_orm import user_db
 from botLogic.middleware.pre_check_middleware import CheckUserMiddleware, CheckUserExisting
-from redisWork.redis_functions import redis_q
+from redisWork.autopostingCash.user_id_cashing import redis_q
 
 router = Router(name=__name__)
 router.message.middleware(CheckUserMiddleware())

@@ -3,7 +3,8 @@ from botLogic.bot_services.bot_instance import bot, dp, WEBHOOK_PATH, WEBHOOK_UR
 import contextlib
 import uvicorn
 import asyncio
-from redisWork.redis_functions import redis_q, redis_cash
+from redisWork.autopostingCash.user_id_cashing import redis_q
+from redisWork.autopostingCash.subscribe_info_cashing import redis_cash
 
 
 @contextlib.asynccontextmanager

@@ -2,7 +2,7 @@ from typing import Callable, Dict, Any, Awaitable
 from dataclasses import dataclass
 from aiogram.types import Message
 from aiogram import BaseMiddleware
-from redisWork.redis_functions import redis_q
+from redisWork.autopostingCash.user_id_cashing import redis_q
 
 
 @dataclass
