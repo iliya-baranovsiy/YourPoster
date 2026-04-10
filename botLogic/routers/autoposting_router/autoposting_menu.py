@@ -2,8 +2,9 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from database.botDb.orms.user_orm import user_db
 from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import SubscribeInfoMiddleware, SubscribeCash
-from .help_functions.text_functions import get_subscribe_info_text
+from ..autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
 from redisWork.autopostingCash.subscribe_info_cashing import redis_cash
+from ..autoposting_router.services.main_menu_keyboard.menu_keyboard import get_self_posting_menu_kb
 
 router = Router(name=__name__)
 router.callback_query.middleware(SubscribeInfoMiddleware())
@@ -13,6 +14,7 @@ router.callback_query.middleware(SubscribeInfoMiddleware())
 async def get_self_posting_menu(call: CallbackQuery, subscribe_info: SubscribeCash, cashing: bool, update: bool,
                                 ):
     tg_id = call.message.chat.id
+    keyboard = get_self_posting_menu_kb()
     if cashing:
         text = get_subscribe_info_text(subscribe_info)
     else:
@@ -22,4 +24,4 @@ async def get_self_posting_menu(call: CallbackQuery, subscribe_info: SubscribeCa
                                       end_date=str(payment_data.end_date),
                                       balance=float(payment_data.balance))
         text = get_subscribe_info_text(payment_data)
-    await call.message.edit_text(text)
+    await call.message.edit_text(text=text, reply_markup=keyboard)
