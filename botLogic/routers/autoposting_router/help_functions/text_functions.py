@@ -1,5 +1,3 @@
-def get_subscribe_info_text(payment_plan, end_date, balance):
-    message = f"Меню автопостинга\n<b>Тариф:</b> {payment_plan}\n"
-    f"<b>Действует по:</b> {end_date}\n"
-    f"<b>Баланс:</b> {balance}"
+def get_subscribe_info_text(data):
+    message = f"Меню автопостинга\n<b>Тариф:</b> {data.payment_plan}\n<b>Действует по:</b> {data.end_date}\n<b>Баланс:</b> {data.balance}"
     return message

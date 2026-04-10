@@ -9,7 +9,7 @@ class RedisCashing:
             if not current_count:
                 await redis.hset('callback_cash_count', tg_id, 1)
                 return False
-            elif current_count >= 7:
+            elif current_count >= 6:
                 await self.delete_user_callback_count(tg_id)
                 return True
             else:

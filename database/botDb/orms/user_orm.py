@@ -42,7 +42,7 @@ class UserOrmWork:
                     balance=row[1],
                     payment_plan=row[0],
                     activate_date=row[2],
-                    end_date=row[3]
+                    end_date_row=row[3]
                 ) for row in result]
                 return result_dto[0]
 

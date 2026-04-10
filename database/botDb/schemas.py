@@ -8,11 +8,11 @@ from pydantic import BaseModel
 class PaymentDTO(BaseModel):
     balance: Decimal
     payment_plan: str
-    end_date: Optional[date]
+    end_date_row: Optional[date]
 
     @property
-    def get_end_day(self):
-        if self.end_date != None:
-            return self.end_date.strftime('%d-%m-%Y')
+    def end_date(self):
+        if self.end_date_row != None:
+            return self.end_date_row.strftime('%d-%m-%Y')
         else:
             return "Безлимитно"
