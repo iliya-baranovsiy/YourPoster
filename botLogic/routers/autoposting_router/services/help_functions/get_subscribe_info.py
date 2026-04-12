@@ -1,0 +1,15 @@
+from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import SubscribeCash
+from database.botDb.orms.user_orm import user_db
+from redisWork.autopostingCash.subscribe_info_cashing import redis_cash
+
+
+async def get_subscribe_info(subscribe_info: SubscribeCash | None, cashing: bool, update: bool, tg_id):
+    if cashing:
+        return subscribe_info
+    else:
+        payment_data = await user_db.get_user_payment_plan_info(tg_id)
+        if update:
+            await redis_cash.set_cash(tg_id=tg_id, payment_plan=str(payment_data.payment_plan),
+                                      end_date=str(payment_data.end_date),
+                                      balance=float(payment_data.balance))
+        return payment_data

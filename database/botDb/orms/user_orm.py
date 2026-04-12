@@ -1,9 +1,11 @@
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy import select
+from sqlalchemy import select, update
 import asyncio
 from database.engines import async_session
 from database.botDb.models import UserModel, PaymentModel, ChannelsModel
 from database.botDb.schemas import PaymentDTO
+from datetime import date, timedelta
+from redisWork.autopostingCash.subscribe_info_cashing import redis_cash
 
 
 class UserOrmWork:
@@ -45,6 +47,24 @@ class UserOrmWork:
                     end_date_row=row[3]
                 ) for row in result]
                 return result_dto[0]
+
+    @staticmethod
+    async def update_user_payment_plan(tg_id, balance, payment_plan, cashing):
+        async with async_session() as session:
+            activate_date = date.today()
+            end_date = date.today() + timedelta(days=31)
+            stmt = update(PaymentModel).values(balance=balance, payment_plan=payment_plan, activate_date=activate_date,
+                                               end_date=end_date).where(PaymentModel.user_id == tg_id)
+            async with session.begin():
+                if cashing:
+                    await session.execute(stmt)
+                    dto_data = PaymentDTO(balance=balance, payment_plan=payment_plan, end_date_row=end_date)
+                    await redis_cash.set_cash(tg_id=tg_id,
+                                              payment_plan=str(dto_data.payment_plan),
+                                              balance=float(dto_data.balance),
+                                              end_date=str(dto_data.end_date))
+                else:
+                    await session.execute(stmt)
 
 
 user_db = UserOrmWork()

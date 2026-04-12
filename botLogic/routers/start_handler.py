@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-from botLogic.common_keyboards.menu_kb_builder import get_main_menu
+from aiogram.fsm.context import FSMContext
 from database.botDb.orms.user_orm import user_db
 from botLogic.middleware.pre_check_middleware import CheckUserMiddleware, CheckUserExisting
 from redisWork.autopostingCash.user_id_cashing import redis_q
@@ -12,10 +12,11 @@ router.message.middleware(CheckUserMiddleware())
 
 
 @router.message(CommandStart())
-async def start_message(msg: Message, existing: CheckUserExisting):
+async def start_message(msg: Message, existing: CheckUserExisting, state: FSMContext):
     if existing.exists:
         await msg.answer('Hello message')
         await get_main_bot_menu(msg=msg)
+        await state.clear()
     else:
         tg_id = msg.chat.id
         username = '@' + msg.chat.username
