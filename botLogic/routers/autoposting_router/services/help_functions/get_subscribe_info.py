@@ -11,5 +11,6 @@ async def get_subscribe_info(subscribe_info: SubscribeCash | None, cashing: bool
         if update:
             await redis_cash.set_cash(tg_id=tg_id, payment_plan=str(payment_data.payment_plan),
                                       end_date=str(payment_data.end_date),
-                                      balance=float(payment_data.balance))
+                                      balance=float(payment_data.balance),
+                                      auto_pay=payment_data.auto_pay)
         return payment_data

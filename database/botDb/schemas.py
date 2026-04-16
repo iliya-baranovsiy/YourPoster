@@ -9,6 +9,7 @@ class PaymentDTO(BaseModel):
     balance: Decimal
     payment_plan: str
     end_date_row: Optional[date]
+    auto_pay: bool
 
     @property
     def end_date(self):

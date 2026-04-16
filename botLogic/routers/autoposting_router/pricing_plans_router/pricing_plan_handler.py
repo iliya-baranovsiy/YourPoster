@@ -9,6 +9,7 @@ from .pricing_functions.handlers_functions import pay_plan_logic
 from .pricing_functions.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb
 from ..services.main_menu_keyboard.menu_keyboard import back_to_autoposting_menu
 from database.botDb.orms.user_orm import user_db
+from ..autoposting_menu import get_self_posting_menu
 
 router = Router(name=__name__)
 router.callback_query.middleware(SubscribeInfoMiddleware())
@@ -21,7 +22,7 @@ async def call_pricing_menu(call: CallbackQuery, subscribe_info: SubscribeCash, 
     tg_id = call.message.chat.id
     payment_data = await get_subscribe_info(subscribe_info=subscribe_info, cashing=cashing, update=update, tg_id=tg_id)
     text = get_subscribe_info_text(payment_data)
-    buttons = get_pricing_plans_menu_kb()
+    buttons = get_pricing_plans_menu_kb(auto_pay=payment_data.auto_pay, payment_plan=payment_data.payment_plan)
     await call.message.edit_text(text='Меню тарифов, твои текущие данные:' + text, reply_markup=buttons)
 
 
@@ -51,3 +52,17 @@ async def agree_with_payment(call: CallbackQuery, state: FSMContext, cashing: bo
     else:
         buttons = back_to_menu_or_pay()
         await call.message.edit_text("Недостаточно средств на балансе", reply_markup=buttons)
+
+
+@router.callback_query(F.data.startswith("autopay"))
+async def change_auto_pay(call: CallbackQuery, subscribe_info: SubscribeCash, cashing: bool, update: bool):
+    tg_id = call.message.chat.id
+    data = call.data.split("_")
+    if data[1] == "off":
+        await user_db.reset_auto_pay_value(tg_id=tg_id, auto_pay=False, cashing=cashing)
+        await call.answer(text="автоматическая покупка снята", show_alert=True)
+    else:
+        await user_db.reset_auto_pay_value(tg_id=tg_id, auto_pay=True, cashing=cashing)
+        await call.answer(text="автоматическая покупка установлена", show_alert=True)
+
+    await get_self_posting_menu(call=call, subscribe_info=subscribe_info, cashing=cashing, update=update)

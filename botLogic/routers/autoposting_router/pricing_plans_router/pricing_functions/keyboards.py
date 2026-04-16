@@ -1,12 +1,28 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def get_pricing_plans_menu_kb():
-    buttons = [
-        [InlineKeyboardButton(text="PRO", callback_data="plan_PRO")],
-        [InlineKeyboardButton(text="VIP", callback_data="plan_VIP")],
-        [InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")]
-    ]
+def get_pricing_plans_menu_kb(auto_pay: bool, payment_plan: str):
+    if payment_plan == "STANDART":
+        buttons = [
+            [InlineKeyboardButton(text="VIP", callback_data="plan_VIP")],
+            [InlineKeyboardButton(text="PRO", callback_data="plan_PRO")],
+            [InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")]
+        ]
+        return InlineKeyboardMarkup(inline_keyboard=buttons)
+    if auto_pay:
+        buttons = [
+            [InlineKeyboardButton(text="VIP", callback_data="plan_VIP")],
+            [InlineKeyboardButton(text="PRO", callback_data="plan_PRO")],
+            [InlineKeyboardButton(text="Выключить автосписывание", callback_data="autopay_off")],
+            [InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")]
+        ]
+    else:
+        buttons = [
+            [InlineKeyboardButton(text="VIP", callback_data="plan_VIP")],
+            [InlineKeyboardButton(text="PRO", callback_data="plan_PRO")],
+            [InlineKeyboardButton(text="Включить автосписывание", callback_data='autopay_in')],
+            [InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")]
+        ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 

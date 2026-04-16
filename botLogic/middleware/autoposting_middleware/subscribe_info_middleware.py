@@ -10,6 +10,7 @@ class SubscribeCash:
     payment_plan: str
     end_date: str
     balance: float
+    auto_pay: bool
 
 
 class SubscribeInfoMiddleware(BaseMiddleware):
@@ -30,7 +31,9 @@ class SubscribeInfoMiddleware(BaseMiddleware):
             subscribe_info = SubscribeCash(
                 payment_plan=cash['payment_plan'],
                 end_date=cash['end_date'],
-                balance=cash['balance'])
+                balance=cash['balance'],
+                auto_pay=cash['auto_pay']
+            )
         else:
             update = await redis_cash.inc_check_callback_count(tg_id=tg_id)
         data.update(subscribe_info=subscribe_info, cashing=is_cashing, update=update)

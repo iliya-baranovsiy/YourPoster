@@ -44,7 +44,8 @@ class UserOrmWork:
                     balance=result[0],
                     payment_plan=result[1].payment_plan,
                     activate_date=result[1].activate_date,
-                    end_date_row=result[1].end_date
+                    end_date_row=result[1].end_date,
+                    auto_pay=result[1].automatic_buy
                 )
 
                 return dto_result
@@ -70,6 +71,17 @@ class UserOrmWork:
                 else:
                     await session.execute(stmt_payment)
                     await session.execute(stmt_user)
+
+    @staticmethod
+    async def reset_auto_pay_value(tg_id, auto_pay, cashing):
+        async with async_session() as session:
+            stmt = update(PaymentModel).values(automatic_buy=auto_pay).where(PaymentModel.user_id == tg_id)
+            async with session.begin():
+                if cashing:
+                    await redis_cash.reset_auto_pay(auto_pay=auto_pay, tg_id=tg_id)
+                    await session.execute(stmt)
+                else:
+                    await session.execute(stmt)
 
 
 user_db = UserOrmWork()

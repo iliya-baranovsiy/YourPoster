@@ -3,6 +3,8 @@ import json
 
 
 class RedisCashing:
+    """VALIDATE CASHING"""
+
     async def inc_check_callback_count(self, tg_id) -> bool:
         async with redis_engine as redis:
             current_count = await self.get_callback_count(tg_id)
@@ -27,12 +29,15 @@ class RedisCashing:
         async with redis_engine as redis:
             await redis.hdel('callback_cash_count', tg_id)
 
+    """CASHING FUNCTIONS"""
+
     @staticmethod
-    async def set_cash(tg_id, payment_plan, end_date, balance):
+    async def set_cash(tg_id, payment_plan, end_date, balance, auto_pay):
         async with redis_engine as redis:
             json_data = {'payment_plan': payment_plan,
                          'end_date': end_date,
-                         'balance': balance
+                         'balance': balance,
+                         'auto_pay': auto_pay
                          }
             await redis.hset("callback_cash", tg_id, json.dumps(json_data))
 
@@ -41,6 +46,14 @@ class RedisCashing:
         async with redis_engine as redis:
             cash = await redis.hget("callback_cash", tg_id)
             return json.loads(cash) if cash else None
+
+    async def reset_auto_pay(self, auto_pay: bool, tg_id):
+        async with redis_engine as redis:
+            update_existing = await self.get_cash(tg_id)
+            update_existing['auto_pay'] = auto_pay
+            await redis.hset("callback_cash", tg_id, json.dumps(update_existing))
+
+    """DROP FUNCTIONS"""
 
     @staticmethod
     async def drop_counter():
