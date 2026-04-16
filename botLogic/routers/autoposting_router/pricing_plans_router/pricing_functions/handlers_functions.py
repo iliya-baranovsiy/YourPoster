@@ -1,11 +1,6 @@
 from aiogram.types import CallbackQuery
-from .keyboards import get_pricing_plans_menu_kb, get_agree_or_not_kb, back_to_plans, back_to_menu_or_pay
+from .keyboards import get_agree_or_not_kb, back_to_plans, back_to_menu_or_pay
 from ..states.price_state import AgreePayPlan
-
-
-async def get_pricing_plan_menu(call: CallbackQuery, text):
-    buttons = get_pricing_plans_menu_kb()
-    await call.message.edit_text(text=text, reply_markup=buttons)
 
 
 async def pay_plan_logic(call: CallbackQuery, target_plan, current_payment_data, state):

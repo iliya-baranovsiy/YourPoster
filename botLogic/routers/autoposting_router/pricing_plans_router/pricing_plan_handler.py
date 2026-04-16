@@ -1,13 +1,12 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from .pricing_functions.handlers_functions import get_pricing_plan_menu
 from .states.price_state import AgreePayPlan
 from botLogic.routers.autoposting_router.services.help_functions.get_subscribe_info import get_subscribe_info
 from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import SubscribeInfoMiddleware, SubscribeCash
 from botLogic.routers.autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
 from .pricing_functions.handlers_functions import pay_plan_logic
-from .pricing_functions.keyboards import back_to_menu_or_pay
+from .pricing_functions.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb
 from ..services.main_menu_keyboard.menu_keyboard import back_to_autoposting_menu
 from database.botDb.orms.user_orm import user_db
 
@@ -22,7 +21,8 @@ async def call_pricing_menu(call: CallbackQuery, subscribe_info: SubscribeCash, 
     tg_id = call.message.chat.id
     payment_data = await get_subscribe_info(subscribe_info=subscribe_info, cashing=cashing, update=update, tg_id=tg_id)
     text = get_subscribe_info_text(payment_data)
-    await get_pricing_plan_menu(call=call, text='Меню тарифов, твои текущие данные:' + text)
+    buttons = get_pricing_plans_menu_kb()
+    await call.message.edit_text(text='Меню тарифов, твои текущие данные:' + text, reply_markup=buttons)
 
 
 @router.callback_query(F.data.startswith('plan'))
