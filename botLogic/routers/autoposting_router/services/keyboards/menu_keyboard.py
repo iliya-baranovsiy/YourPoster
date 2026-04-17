@@ -13,6 +13,6 @@ def get_self_posting_menu_kb():
 
 def back_to_autoposting_menu():
     buttons = [
-        [InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")]
+        [InlineKeyboardButton(text="Назад", callback_data="payment_plans")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)

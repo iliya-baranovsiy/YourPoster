@@ -85,5 +85,22 @@ class UserOrmWork:
                 else:
                     await session.execute(stmt)
 
+    @staticmethod
+    async def extend_payment_plan_date(tg_id, new_date, result_balance, cashing):
+        async with async_session() as session:
+            stmt_pays = update(PaymentModel).values(end_date=new_date, automatic_buy=False).where(
+                PaymentModel.user_id == tg_id)
+            stmt_balance = update(UserModel).values(balance=result_balance).where(UserModel.tg_id == tg_id)
+            dto_data = PaymentDTO(balance=result_balance, payment_plan=None, end_date_row=new_date,
+                                  auto_pay=False)
+            async with session.begin():
+                if cashing:
+                    await redis_cash.extend_payment_plan_date(new_date=str(dto_data.end_date),
+                                                              result_balance=float(dto_data.balance),
+                                                              tg_id=tg_id)
+                    pass
+                await session.execute(stmt_balance)
+                await session.execute(stmt_pays)
+
 
 user_db = UserOrmWork()

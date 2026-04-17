@@ -26,7 +26,7 @@ def get_pricing_plans_menu_kb(auto_pay: bool, payment_plan: str):
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def get_agree_or_not_kb():
+def get_agree_or_not_pay_kb():
     buttons = [
         [
             InlineKeyboardButton(text="Да", callback_data="agree_with_pay"),
@@ -56,6 +56,16 @@ def question_auto_pay_kb():
         [
             InlineKeyboardButton(text="Да", callback_data="autopay_in"),
             InlineKeyboardButton(text="Нет", callback_data="autoposting_menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def extend_or_back_kb():
+    buttons = [
+        [
+            InlineKeyboardButton(text="Да", callback_data="extend_payment_plan_callback"),
+            InlineKeyboardButton(text="Нет", callback_data="payment_plans")
         ]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)

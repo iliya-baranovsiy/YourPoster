@@ -6,10 +6,10 @@ from pydantic import BaseModel
 
 
 class PaymentDTO(BaseModel):
-    balance: Decimal
-    payment_plan: str
-    end_date_row: Optional[date]
-    auto_pay: bool
+    balance: Decimal | None
+    payment_plan: str | None
+    end_date_row: Optional[date] | None
+    auto_pay: bool | None
 
     @property
     def end_date(self):

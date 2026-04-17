@@ -6,8 +6,7 @@ from botLogic.routers.autoposting_router.services.help_functions.get_subscribe_i
 from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import SubscribeInfoMiddleware, SubscribeCash
 from botLogic.routers.autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
 from .pricing_functions.handlers_functions import pay_plan_logic
-from .pricing_functions.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb
-from .pricing_functions.keyboards import question_auto_pay_kb
+from .keyboards.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb, question_auto_pay_kb
 from database.botDb.orms.user_orm import user_db
 from ..autoposting_menu import get_self_posting_menu
 
@@ -44,6 +43,7 @@ async def agree_with_payment(call: CallbackQuery, state: FSMContext, cashing: bo
     target_plan = state_data.get("plan")
     user_balance = float(state_data.get("balance"))
     result_user_balance = user_balance - currency
+    await state.clear()
     if result_user_balance >= 0:
         buttons = question_auto_pay_kb()
         await user_db.update_user_payment_plan(tg_id=tg_id, payment_plan=target_plan, balance=result_user_balance,
@@ -57,7 +57,8 @@ async def agree_with_payment(call: CallbackQuery, state: FSMContext, cashing: bo
 
 
 @router.callback_query(F.data.startswith("autopay"))
-async def change_auto_pay(call: CallbackQuery, subscribe_info: SubscribeCash, cashing: bool, update: bool):
+async def change_auto_pay(call: CallbackQuery, subscribe_info: SubscribeCash, cashing: bool, update: bool,
+                          state: FSMContext):
     tg_id = call.message.chat.id
     data = call.data.split("_")
     if data[1] == "off":
@@ -67,4 +68,21 @@ async def change_auto_pay(call: CallbackQuery, subscribe_info: SubscribeCash, ca
         await user_db.reset_auto_pay_value(tg_id=tg_id, auto_pay=True, cashing=cashing)
         await call.answer(text="автоматическая покупка установлена", show_alert=True)
 
-    await get_self_posting_menu(call=call, subscribe_info=subscribe_info, cashing=cashing, update=update)
+    await get_self_posting_menu(call=call, subscribe_info=subscribe_info, cashing=cashing, update=update, state=state)
+
+
+@router.callback_query(F.data == "extend_payment_plan_callback", AgreePayPlan.agree_to_extend)
+async def extend_payment_plan(call: CallbackQuery, state: FSMContext, cashing: bool):
+    tg_id = call.message.chat.id
+    state_data = await state.get_data()
+    await state.clear()
+    end_date = state_data["end_date"]
+    result_balance = state_data["result_balance"]
+
+    buttons = question_auto_pay_kb()
+    await user_db.extend_payment_plan_date(tg_id=tg_id, new_date=end_date, result_balance=result_balance,
+                                           cashing=cashing)
+    await call.message.edit_text(
+        text=f"Тариф успешно продлён. Желаешь ли ты включить автоматичсекое списывание ?",
+        reply_markup=buttons)
+
