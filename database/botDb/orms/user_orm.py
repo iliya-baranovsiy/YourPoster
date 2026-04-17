@@ -57,7 +57,8 @@ class UserOrmWork:
             end_date = date.today() + timedelta(days=31)
             stmt_payment = update(PaymentModel).values(payment_plan=payment_plan,
                                                        activate_date=activate_date,
-                                                       end_date=end_date).where(PaymentModel.user_id == tg_id)
+                                                       end_date=end_date,
+                                                       automatic_buy=False).where(PaymentModel.user_id == tg_id)
             stmt_user = update(UserModel).values(balance=balance).where(UserModel.tg_id == tg_id)
             async with session.begin():
                 if cashing:
