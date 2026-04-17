@@ -49,3 +49,13 @@ def back_to_menu_or_pay():
         [InlineKeyboardButton(text='Назад', callback_data="payment_plans")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+
+def question_auto_pay_kb():
+    buttons = [
+        [
+            InlineKeyboardButton(text="Да", callback_data="autopay_in"),
+            InlineKeyboardButton(text="Нет", callback_data="autoposting_menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)

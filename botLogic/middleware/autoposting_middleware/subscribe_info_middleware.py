@@ -12,6 +12,9 @@ class SubscribeCash:
     balance: float
     auto_pay: bool
 
+    def __post_init__(self):
+        self.balance = round(self.balance, 2)
+
 
 class SubscribeInfoMiddleware(BaseMiddleware):
 

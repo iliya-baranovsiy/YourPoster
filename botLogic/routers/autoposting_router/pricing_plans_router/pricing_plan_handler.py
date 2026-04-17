@@ -7,7 +7,7 @@ from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import
 from botLogic.routers.autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
 from .pricing_functions.handlers_functions import pay_plan_logic
 from .pricing_functions.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb
-from ..services.main_menu_keyboard.menu_keyboard import back_to_autoposting_menu
+from .pricing_functions.keyboards import question_auto_pay_kb
 from database.botDb.orms.user_orm import user_db
 from ..autoposting_menu import get_self_posting_menu
 
@@ -45,10 +45,12 @@ async def agree_with_payment(call: CallbackQuery, state: FSMContext, cashing: bo
     user_balance = float(state_data.get("balance"))
     result_user_balance = user_balance - currency
     if result_user_balance >= 0:
-        buttons = back_to_autoposting_menu()
+        buttons = question_auto_pay_kb()
         await user_db.update_user_payment_plan(tg_id=tg_id, payment_plan=target_plan, balance=result_user_balance,
                                                cashing=cashing)
-        await call.message.edit_text(text=f"Тариф {target_plan} успешно преобретен", reply_markup=buttons)
+        await call.message.edit_text(
+            text=f"Тариф {target_plan} успешно преобретен. Желаешь ли ты включить автоматичсекое списывание ?",
+            reply_markup=buttons)
     else:
         buttons = back_to_menu_or_pay()
         await call.message.edit_text("Недостаточно средств на балансе", reply_markup=buttons)

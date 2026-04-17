@@ -63,11 +63,13 @@ class UserOrmWork:
                 if cashing:
                     await session.execute(stmt_payment)
                     await session.execute(stmt_user)
-                    dto_data = PaymentDTO(balance=balance, payment_plan=payment_plan, end_date_row=end_date)
+                    dto_data = PaymentDTO(balance=balance, payment_plan=payment_plan, end_date_row=end_date,
+                                          auto_pay=False)
                     await redis_cash.set_cash(tg_id=tg_id,
                                               payment_plan=str(dto_data.payment_plan),
                                               balance=float(dto_data.balance),
-                                              end_date=str(dto_data.end_date))
+                                              end_date=str(dto_data.end_date),
+                                              auto_pay=False)
                 else:
                     await session.execute(stmt_payment)
                     await session.execute(stmt_user)
