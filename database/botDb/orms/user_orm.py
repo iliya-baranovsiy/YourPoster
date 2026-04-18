@@ -6,7 +6,7 @@ from database.botDb.models import PaymentModel, ChannelsModel
 from database.commonDb.models import UserModel
 from database.botDb.schemas import PaymentDTO
 from datetime import date, timedelta
-from redisWork.autopostingCash.subscribe_info_cashing import redis_cash
+from redisWork.autopostingCash.user_payment_cash import user_payment_cash
 
 
 class UserOrmWork:
@@ -66,7 +66,7 @@ class UserOrmWork:
                     await session.execute(stmt_user)
                     dto_data = PaymentDTO(balance=balance, payment_plan=payment_plan, end_date_row=end_date,
                                           auto_pay=False)
-                    await redis_cash.set_cash(tg_id=tg_id,
+                    await user_payment_cash.set_cash(tg_id=tg_id,
                                               payment_plan=str(dto_data.payment_plan),
                                               balance=float(dto_data.balance),
                                               end_date=str(dto_data.end_date),
@@ -81,7 +81,7 @@ class UserOrmWork:
             stmt = update(PaymentModel).values(automatic_buy=auto_pay).where(PaymentModel.user_id == tg_id)
             async with session.begin():
                 if cashing:
-                    await redis_cash.reset_auto_pay(auto_pay=auto_pay, tg_id=tg_id)
+                    await user_payment_cash.reset_auto_pay(auto_pay=auto_pay, tg_id=tg_id)
                     await session.execute(stmt)
                 else:
                     await session.execute(stmt)
@@ -96,7 +96,7 @@ class UserOrmWork:
                                   auto_pay=False)
             async with session.begin():
                 if cashing:
-                    await redis_cash.extend_payment_plan_date(new_date=str(dto_data.end_date),
+                    await user_payment_cash.extend_payment_plan_date(new_date=str(dto_data.end_date),
                                                               result_balance=float(dto_data.balance),
                                                               tg_id=tg_id)
                     pass
