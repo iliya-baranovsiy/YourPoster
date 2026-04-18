@@ -3,7 +3,7 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import SubscribeInfoMiddleware, SubscribeCash
 from ..autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
-from ..autoposting_router.services.keyboards.menu_keyboard import get_self_posting_menu_kb
+from .services.keyboards.auto_posting_kb import get_self_posting_menu_kb
 from .services.help_functions.get_subscribe_info import get_subscribe_info
 
 router = Router(name=__name__)

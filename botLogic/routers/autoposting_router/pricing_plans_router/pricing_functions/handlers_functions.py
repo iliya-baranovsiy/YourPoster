@@ -3,7 +3,7 @@ from datetime import timedelta
 from .date_functions import get_current_date
 from ..states.price_state import AgreePayPlan
 from ..keyboards.keyboards import get_agree_or_not_pay_kb, back_to_menu_or_pay, extend_or_back_kb, back_to_plans
-from botLogic.routers.autoposting_router.services.keyboards.menu_keyboard import back_to_autoposting_menu
+from botLogic.routers.autoposting_router.services.keyboards.auto_posting_kb import back_to_autoposting_menu
 
 VIP_PRICE = 5.99
 PRO_PRICE = 2.99
