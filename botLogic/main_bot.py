@@ -3,7 +3,7 @@ from botLogic.bot_services.bot_instance import bot, dp, WEBHOOK_PATH, WEBHOOK_UR
 import contextlib
 import uvicorn
 import asyncio
-from redisWork.autopostingCash.user_id_cashing import redis_q
+from redisWork.app_casing.user_id_cashing import user_id_cashing
 from redisWork.autopostingCash.cash_cleaner import cash_cleaner
 
 
@@ -27,7 +27,7 @@ async def bot_webhook(request: Request):
 
 
 async def start_bot():
-    await redis_q.clear_users_set()
+    await user_id_cashing.clear_users_set()
     await cash_cleaner.drop_counter()
     await cash_cleaner.drop_cash()
     uvicorn.run("main_bot:app", host="127.0.0.1", port=8000, reload=True)

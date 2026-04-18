@@ -2,9 +2,9 @@ from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from database.botDb.orms.user_orm import user_db
+from database.commonDb.user_orm import user_orm
 from botLogic.middleware.pre_check_middleware import CheckUserMiddleware, CheckUserExisting
-from redisWork.autopostingCash.user_id_cashing import redis_q
+from redisWork.app_casing.user_id_cashing import user_id_cashing
 from ..common_functions.menu_handlers_functions import get_main_bot_menu
 
 router = Router(name=__name__)
@@ -20,7 +20,7 @@ async def start_message(msg: Message, existing: CheckUserExisting, state: FSMCon
     else:
         tg_id = msg.chat.id
         username = '@' + msg.chat.username
-        await user_db.create_user(tg_id=tg_id, username=username)
-        await redis_q.set_user(str(tg_id))
+        await user_orm.create_user(tg_id=tg_id, username=username)
+        await user_id_cashing.set_user(str(tg_id))
         await msg.answer('Hello message')
         await get_main_bot_menu(msg=msg)

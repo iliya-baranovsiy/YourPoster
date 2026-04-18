@@ -1,34 +1,14 @@
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select, update
 import asyncio
 from database.engines import async_session
-from database.botDb.models import PaymentModel, ChannelsModel
+from .models import PaymentModel
 from database.commonDb.models import UserModel
-from database.botDb.schemas import PaymentDTO
+from .schemas import PaymentDTO
 from datetime import date, timedelta
 from redisWork.autopostingCash.user_payment_cash import user_payment_cash
 
 
-class UserOrmWork:
-    @staticmethod
-    async def create_user(tg_id: int, username: str | None):
-        async with async_session() as session:
-            if tg_id:
-                user = insert(UserModel).values(tg_id=tg_id, username=username)
-                unique_user = user.on_conflict_do_nothing(index_elements=['tg_id'])
-                payment = insert(PaymentModel).values(user_id=tg_id).on_conflict_do_nothing(index_elements=['user_id'])
-                async with session.begin():
-                    await session.execute(unique_user)
-                    await session.execute(payment)
-
-    @staticmethod
-    async def get_users_channels(tg_id: int):
-        async with async_session() as session:
-            if tg_id:
-                stmt = select(ChannelsModel.channel_id).join(UserModel.channels).where(UserModel.tg_id == tg_id)
-                result = await session.execute(stmt)
-                return result.scalars().all()
-
+class PaymentOrm:
     @staticmethod
     async def get_user_payment_plan_info(tg_id):
         async with async_session() as session:
@@ -67,10 +47,10 @@ class UserOrmWork:
                     dto_data = PaymentDTO(balance=balance, payment_plan=payment_plan, end_date_row=end_date,
                                           auto_pay=False)
                     await user_payment_cash.set_cash(tg_id=tg_id,
-                                              payment_plan=str(dto_data.payment_plan),
-                                              balance=float(dto_data.balance),
-                                              end_date=str(dto_data.end_date),
-                                              auto_pay=False)
+                                                     payment_plan=str(dto_data.payment_plan),
+                                                     balance=float(dto_data.balance),
+                                                     end_date=str(dto_data.end_date),
+                                                     auto_pay=False)
                 else:
                     await session.execute(stmt_payment)
                     await session.execute(stmt_user)
@@ -97,11 +77,11 @@ class UserOrmWork:
             async with session.begin():
                 if cashing:
                     await user_payment_cash.extend_payment_plan_date(new_date=str(dto_data.end_date),
-                                                              result_balance=float(dto_data.balance),
-                                                              tg_id=tg_id)
+                                                                     result_balance=float(dto_data.balance),
+                                                                     tg_id=tg_id)
                     pass
                 await session.execute(stmt_balance)
                 await session.execute(stmt_pays)
 
 
-user_db = UserOrmWork()
+payment_orm = PaymentOrm()

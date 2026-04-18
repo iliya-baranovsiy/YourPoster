@@ -1,7 +1,7 @@
 from ..redis_init import redis_engine
 
 
-class RedisQueries:
+class UserIdCashing:
     @staticmethod
     async def set_user(tg_id):
         async with redis_engine as redis:
@@ -19,4 +19,4 @@ class RedisQueries:
             await redis.delete('tg_users')
 
 
-redis_q = RedisQueries()
+user_id_cashing = UserIdCashing()

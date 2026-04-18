@@ -2,8 +2,7 @@ from typing import Callable, Dict, Any, Awaitable
 from dataclasses import dataclass
 from aiogram.types import Message
 from aiogram import BaseMiddleware
-from redisWork.autopostingCash.user_id_cashing import redis_q
-
+from redisWork.app_casing.user_id_cashing import user_id_cashing
 
 @dataclass
 class CheckUserExisting:
@@ -20,7 +19,7 @@ class CheckUserMiddleware(BaseMiddleware):
             event: Message,
             data: Dict[str, Any]
     ) -> Any:
-        self.exist = await redis_q.check_user_existing(tg_id=str(event.chat.id))
+        self.exist = await user_id_cashing.check_user_existing(tg_id=str(event.chat.id))
         data.update(
             existing=CheckUserExisting(self.exist)
         )

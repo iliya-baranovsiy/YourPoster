@@ -7,7 +7,7 @@ from botLogic.middleware.autoposting_middleware.subscribe_info_middleware import
 from botLogic.routers.autoposting_router.services.help_functions.text_functions import get_subscribe_info_text
 from .pricing_functions.handlers_functions import pay_plan_logic
 from .keyboards.keyboards import back_to_menu_or_pay, get_pricing_plans_menu_kb, question_auto_pay_kb
-from database.botDb.orms.user_orm import user_db
+from database.botDb.paymentPlansDB.payment_orm import payment_orm
 from ..autoposting_menu import get_self_posting_menu
 
 router = Router(name=__name__)
@@ -46,7 +46,7 @@ async def agree_with_payment(call: CallbackQuery, state: FSMContext, cashing: bo
     await state.clear()
     if result_user_balance >= 0:
         buttons = question_auto_pay_kb()
-        await user_db.update_user_payment_plan(tg_id=tg_id, payment_plan=target_plan, balance=result_user_balance,
+        await payment_orm.update_user_payment_plan(tg_id=tg_id, payment_plan=target_plan, balance=result_user_balance,
                                                cashing=cashing)
         await call.message.edit_text(
             text=f"Тариф {target_plan} успешно преобретен. Желаешь ли ты включить автоматичсекое списывание ?",
@@ -62,10 +62,10 @@ async def change_auto_pay(call: CallbackQuery, subscribe_info: SubscribeCash, ca
     tg_id = call.message.chat.id
     data = call.data.split("_")
     if data[1] == "off":
-        await user_db.reset_auto_pay_value(tg_id=tg_id, auto_pay=False, cashing=cashing)
+        await payment_orm.reset_auto_pay_value(tg_id=tg_id, auto_pay=False, cashing=cashing)
         await call.answer(text="автоматическая покупка снята", show_alert=True)
     else:
-        await user_db.reset_auto_pay_value(tg_id=tg_id, auto_pay=True, cashing=cashing)
+        await payment_orm.reset_auto_pay_value(tg_id=tg_id, auto_pay=True, cashing=cashing)
         await call.answer(text="автоматическая покупка установлена", show_alert=True)
 
     await get_self_posting_menu(call=call, subscribe_info=subscribe_info, cashing=cashing, update=update, state=state)
@@ -80,7 +80,7 @@ async def extend_payment_plan(call: CallbackQuery, state: FSMContext, cashing: b
     result_balance = state_data["result_balance"]
 
     buttons = question_auto_pay_kb()
-    await user_db.extend_payment_plan_date(tg_id=tg_id, new_date=end_date, result_balance=result_balance,
+    await payment_orm.extend_payment_plan_date(tg_id=tg_id, new_date=end_date, result_balance=result_balance,
                                            cashing=cashing)
     await call.message.edit_text(
         text=f"Тариф успешно продлён. Желаешь ли ты включить автоматичсекое списывание ?",

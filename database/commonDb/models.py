@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Index, Numeric, text
 from database.engines import Base
+from ..botDb.channelsDb.models import ChannelsModel
 
 
 class UserModel(Base):
