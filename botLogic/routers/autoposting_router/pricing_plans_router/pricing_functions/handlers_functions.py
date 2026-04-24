@@ -15,7 +15,6 @@ async def pay_plan_logic(call: CallbackQuery, target_plan, current_payment_data,
     balance = current_payment_data.balance
 
     if target_plan == payment_plan:
-        # продление
         await extend_payment_plan(call=call, end_date=end_date, state=state, pyment_plan=payment_plan, balance=balance)
     elif target_plan == "PRO" and payment_plan == "VIP":
         await logic_with_max_plan(call=call)
