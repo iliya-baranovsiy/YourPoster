@@ -1,7 +1,9 @@
 from database.engines import async_session
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from database.commonDb.models import UserModel
 from .models import ChannelsModel
+import asyncio
 
 
 class ChannelsOrm:
@@ -9,9 +11,23 @@ class ChannelsOrm:
     async def get_users_channels(tg_id: int):
         async with async_session() as session:
             if tg_id:
-                stmt = select(ChannelsModel.channel_id).join(UserModel.channels).where(UserModel.tg_id == tg_id)
+                stmt = select(ChannelsModel.channel_id, ChannelsModel.title).where(ChannelsModel.owner_id == tg_id)
                 result = await session.execute(stmt)
-                return result.scalars().all()
+                return result.all()
+
+    @staticmethod
+    async def add_user_channel(owner_id, channel_id, title):
+        async with async_session() as session:
+            stmt = insert(ChannelsModel).values(owner_id=owner_id, channel_id=channel_id, title=title)
+            async with session.begin():
+                await session.execute(stmt)
+
+    @staticmethod
+    async def is_channel_exists(channel_id):
+        async with async_session() as session:
+            stmt = select(ChannelsModel.title).where(ChannelsModel.channel_id == channel_id)
+            result = await session.execute(stmt)
+            return result.scalars().all()
 
 
 channels_orm = ChannelsOrm()

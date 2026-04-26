@@ -4,8 +4,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 def get_channels_buttons(channels: list, add: bool):
     buttons = []
     if channels:
-        for channel in channels:
-            buttons.append([InlineKeyboardButton(text=channel, callback_data=channel)])
+        for tup in channels:
+            buttons.append([InlineKeyboardButton(text=tup[1], callback_data='channel_' + str(tup[0]))])
     if add:
         buttons.append([InlineKeyboardButton(text="Добавить канал", callback_data="add_channel")])
     buttons.append([InlineKeyboardButton(text="Назад", callback_data="autoposting_menu")])

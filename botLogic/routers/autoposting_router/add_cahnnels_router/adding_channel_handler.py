@@ -5,14 +5,17 @@ from aiogram.fsm.context import FSMContext
 from .keyboards.channels_list_kb import get_channels_buttons
 from .states.add_channel_state import AddChannelState
 from .keyboards.channels_list_kb import back_to_channels_menu
-from .utils.functions.check_member import is_member
+from .utils.functions.check_member import is_valid_to_add
+from database.botDb.channelsDb.channels_orm import channels_orm
+from .utils.functions.AddChannelStatus import AddChannelStatus
 
 router = Router(name=__name__)
 
 
 @router.callback_query(F.data == "my_channels")
 async def user_channels_list(call: CallbackQuery):
-    channels = []
+    tg_id = call.message.chat.id
+    channels = await channels_orm.get_users_channels(tg_id)
     ability_to_add = True
     buttons = get_channels_buttons(channels, ability_to_add)
     # add text info about channels count and ability to add and payment plan
@@ -27,6 +30,26 @@ async def add_channel(call: CallbackQuery, state: FSMContext):
 
 
 @router.message(AddChannelState.wait_repost)
-async def get_post(msg: Message):
-    if msg.forward_from_chat and msg.forward_from_chat.type == "channel":
-        await is_member(chat_id=msg.forward_from_chat.id)
+async def get_post(msg: Message, state: FSMContext):
+    buttons = back_to_channels_menu()
+
+    user_id = msg.chat.id
+    forwarded = msg.forward_from_chat
+    status = await is_valid_to_add(forwarded)
+
+    if status == AddChannelStatus.OK:
+        channel_id = forwarded.id
+        channel_title = forwarded.title
+        await channels_orm.add_user_channel(owner_id=user_id, channel_id=channel_id, title=channel_title)
+        await msg.answer("Канал успешно привязан. Попробуй заново", reply_markup=buttons)
+        await state.clear()
+    elif status == AddChannelStatus.NOT_CHANNEL:
+        await msg.answer("Место откуда ты пересылаешь не является каналом. Попробуй заново", reply_markup=buttons)
+    elif status == AddChannelStatus.ALREADY_EXISTS:
+        await msg.answer("Данный канал уже привязан. Попробуй заново", reply_markup=buttons)
+    elif status == AddChannelStatus.NO_ACCESS:
+        await msg.answer("Предоставь боту соответствующие права и добавь его в канал. Попробуй заново",
+                         reply_markup=buttons)
+    else:
+        await msg.answer("Что-то пошло не так. Попробуй заново",
+                         reply_markup=buttons)
