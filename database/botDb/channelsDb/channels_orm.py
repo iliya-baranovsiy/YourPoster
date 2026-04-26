@@ -1,5 +1,5 @@
 from database.engines import async_session
-from sqlalchemy import select
+from sqlalchemy import select, exists
 from sqlalchemy.dialects.postgresql import insert
 from database.commonDb.models import UserModel
 from .models import ChannelsModel
@@ -25,9 +25,9 @@ class ChannelsOrm:
     @staticmethod
     async def is_channel_exists(channel_id):
         async with async_session() as session:
-            stmt = select(ChannelsModel.title).where(ChannelsModel.channel_id == channel_id)
+            stmt = select(exists().where(ChannelsModel.channel_id==channel_id))
             result = await session.execute(stmt)
-            return result.scalars().all()
+            return result.scalar()
 
 
 channels_orm = ChannelsOrm()

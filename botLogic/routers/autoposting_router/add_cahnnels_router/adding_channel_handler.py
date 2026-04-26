@@ -8,16 +8,15 @@ from .keyboards.channels_list_kb import back_to_channels_menu
 from .utils.functions.check_member import is_valid_to_add
 from database.botDb.channelsDb.channels_orm import channels_orm
 from .utils.functions.AddChannelStatus import AddChannelStatus
+from botLogic.middleware.autoposting_middleware.channels_middleware import ChannelMiddleware
 
 router = Router(name=__name__)
+router.callback_query.middleware(ChannelMiddleware())
 
 
 @router.callback_query(F.data == "my_channels")
-async def user_channels_list(call: CallbackQuery):
-    tg_id = call.message.chat.id
-    channels = await channels_orm.get_users_channels(tg_id)
-    ability_to_add = True
-    buttons = get_channels_buttons(channels, ability_to_add)
+async def user_channels_list(call: CallbackQuery, channels_list: list, ability_to_add: bool, payment_plan: str):
+    buttons = get_channels_buttons(channels_list, ability_to_add)
     # add text info about channels count and ability to add and payment plan
     await call.message.edit_text("Твои каналы", reply_markup=buttons)
 
