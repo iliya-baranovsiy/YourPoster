@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
-from botLogic.bot_services.bot_instance import bot, dp, WEBHOOK_PATH, WEBHOOK_URL
+from botLogic.bot_services.app_instance import dp, WEBHOOK_PATH, WEBHOOK_URL
+from botLogic.bot_services.bot_instance import bot
 import contextlib
 import uvicorn
 import asyncio

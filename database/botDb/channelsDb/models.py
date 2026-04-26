@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Index
 from database.engines import Base
 
 
@@ -10,3 +10,5 @@ class ChannelsModel(Base):
     channel_id: Mapped[int] = mapped_column(unique=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("Users.tg_id"))
     owner: Mapped["UserModel"] = relationship("UserModel", back_populates="channels")
+
+    __table_args__ = (Index("channels_index", "channel_id", "owner_id"),)
