@@ -23,5 +23,11 @@ class CashCleaner:
             result = await redis.hgetall("callback_cash")
             return result
 
+    @staticmethod
+    async def drop_channels_cash():
+        async with redis_engine as redis:
+            async for key in redis.scan_iter("user_channels:*"):
+                await redis.delete(key)
+
 
 cash_cleaner = CashCleaner()

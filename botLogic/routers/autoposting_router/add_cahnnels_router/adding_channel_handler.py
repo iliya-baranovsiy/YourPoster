@@ -15,10 +15,14 @@ router.callback_query.middleware(ChannelMiddleware())
 
 
 @router.callback_query(F.data == "my_channels")
-async def user_channels_list(call: CallbackQuery, channels_list: list, ability_to_add: bool, payment_plan: str):
+async def user_channels_list(call: CallbackQuery, channels_list: list, ability_to_add: bool, payment_plan: str,
+                             ability_count: int,
+                             state: FSMContext):
+    await state.clear()
     buttons = get_channels_buttons(channels_list, ability_to_add)
-    # add text info about channels count and ability to add and payment plan
-    await call.message.edit_text("Твои каналы", reply_markup=buttons)
+    await call.message.edit_text(
+        f"Твой тариф: {payment_plan}\nДоступно каналов для привязки: {ability_count}\nТвои каналы",
+        reply_markup=buttons)
 
 
 @router.callback_query(F.data == "add_channel")
@@ -40,7 +44,7 @@ async def get_post(msg: Message, state: FSMContext):
         channel_id = forwarded.id
         channel_title = forwarded.title
         await channels_orm.add_user_channel(owner_id=user_id, channel_id=channel_id, title=channel_title)
-        await msg.answer("Канал успешно привязан. Попробуй заново", reply_markup=buttons)
+        await msg.answer("Канал успешно привязан", reply_markup=buttons)
         await state.clear()
     elif status == AddChannelStatus.NOT_CHANNEL:
         await msg.answer("Место откуда ты пересылаешь не является каналом. Попробуй заново", reply_markup=buttons)

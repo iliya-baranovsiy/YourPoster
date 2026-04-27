@@ -31,6 +31,7 @@ async def start_bot():
     await user_id_cashing.clear_users_set()
     await cash_cleaner.drop_counter()
     await cash_cleaner.drop_cash()
+    await cash_cleaner.drop_channels_cash()
     uvicorn.run("main_bot:app", host="127.0.0.1", port=8000, reload=True)
 
 
