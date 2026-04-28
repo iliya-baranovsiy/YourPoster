@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 
 
-def get_current_date(row_date):
+def get_current_date(row_date) -> date:
     reverse_date = datetime.strptime(row_date, "%d-%m-%Y").strftime("%Y-%m-%d")
     date_to_db = datetime.strptime(reverse_date, "%Y-%m-%d").date()
     return date_to_db

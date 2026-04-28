@@ -27,7 +27,7 @@ class ChannelMiddleware(BaseMiddleware):
             channels = user_data.channels
             payment_plan = user_data.payment_plan
 
-        ability = await get_ability_to_add(channels_list=channels, payment_plan=payment_plan)
+        ability = get_ability_to_add(channels_list=channels, payment_plan=payment_plan)
         data.update(channels_list=channels, ability_to_add=ability[0], payment_plan=ability[1],
                     ability_count=ability[2])
         return await handler(event, data)

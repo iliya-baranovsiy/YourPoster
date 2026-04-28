@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-def get_channels_buttons(channels: list, add: bool):
+def get_channels_buttons(channels: list, add: bool) -> InlineKeyboardMarkup:
     buttons = []
     if channels:
         for tup in channels:
@@ -12,7 +12,7 @@ def get_channels_buttons(channels: list, add: bool):
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def back_to_channels_menu():
+def back_to_channels_menu() -> InlineKeyboardMarkup:
     buttons = [
         [InlineKeyboardButton(text="Назад", callback_data="my_channels")]
     ]
